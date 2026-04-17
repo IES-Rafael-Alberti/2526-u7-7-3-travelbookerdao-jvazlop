@@ -1,10 +1,10 @@
-package es.iesra.datos.dao
+package es.iesra.datos.DAO
 
-import es.iesra.dominio.ReservaHotel
+import es.iesra.dominio.ReservaVuelo
 import java.io.File
 
-class ReservaHotelDAO(
-    private val filePath: String = "data/reservas_hotel.csv"
+class ReservaVueloDAO(
+    private val filePath: String = "./reservas_vuelo.csv"
 ) {
 
     private val file = File(filePath)
@@ -13,28 +13,27 @@ class ReservaHotelDAO(
         if (!file.exists()) {
             file.parentFile.mkdirs()
             file.createNewFile()
-
-            // Cabecera CSV
-            file.appendText("id,descripcion,ubicacion,numeroNoches\n")
+            file.appendText("id,descripcion,origen,destino,hora\n")
         }
     }
 
-    fun guardar(reserva: ReservaHotel) {
-        val linea = "${reserva.id},${reserva.descripcion},${reserva.ubicacion},${reserva.numeroNoches}\n"
+    fun guardar(reserva: ReservaVuelo) {
+        val linea = "${reserva.id},${reserva.descripcion},${reserva.origen},${reserva.destino},${reserva.horaVuelo}\n"
         file.appendText(linea)
     }
 
-    fun obtenerTodas(): List<ReservaHotel> {
+    fun obtenerTodas(): List<ReservaVuelo> {
         return file.readLines()
             .drop(1)
             .filter { it.isNotBlank() }
             .map { linea ->
                 val partes = linea.split(",")
 
-                ReservaHotel.creaInstancia(
+                ReservaVuelo.creaInstancia(
                     partes[1],
                     partes[2],
-                    partes[3].toInt()
+                    partes[3],
+                    partes[4]
                 )
             }
     }
@@ -44,21 +43,21 @@ class ReservaHotelDAO(
         val eliminado = lista.removeIf { it.id == id }
 
         if (eliminado) {
-            file.writeText("id,descripcion,ubicacion,numeroNoches\n")
+            file.writeText("id,descripcion,origen,destino,hora\n")
             lista.forEach { guardar(it) }
         }
 
         return eliminado
     }
 
-    fun actualizar(reserva: ReservaHotel): Boolean {
+    fun actualizar(reserva: ReservaVuelo): Boolean {
         val lista = obtenerTodas().toMutableList()
         val index = lista.indexOfFirst { it.id == reserva.id }
 
         if (index != -1) {
             lista[index] = reserva
 
-            file.writeText("id,descripcion,ubicacion,numeroNoches\n")
+            file.writeText("id,descripcion,origen,destino,hora\n")
             lista.forEach { guardar(it) }
 
             return true

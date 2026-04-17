@@ -1,28 +1,34 @@
 package es.iesra.datos
 
+import es.iesra.datos.DAO.ReservaVueloDAO
+import es.iesra.datos.DAO.ReservaHotelDAO
 import es.iesra.dominio.Reserva
-import es.iesra.datos.dao.ReservaVueloDAO
-import es.iesra.datos.dao.ReservaHotelDAO
 import es.iesra.dominio.ReservaVuelo
 import es.iesra.dominio.ReservaHotel
 
-/**
- * Implementación en memoria del repositorio de reservas.
- */
 class ReservaRepository(
     private val vueloDAO: ReservaVueloDAO,
     private val hotelDAO: ReservaHotelDAO
-) : IReservaRepository
+) : IReservaRepository {
 
     override fun agregar(reserva: Reserva): Boolean {
-        when (reserva) {
-            is ReservaVuelo -> vueloDAO.guardar(reserva)
-            is ReservaHotel -> hotelDAO.guardar(reserva)
+        return when (reserva) {
+            is ReservaVuelo -> {
+                vueloDAO.guardar(reserva)
+                true
+            }
+            is ReservaHotel -> {
+                hotelDAO.guardar(reserva)
+                true
+            }
+            else -> false
         }
-        return true
     }
 
     override fun obtenerTodas(): List<Reserva> {
-        return vueloDAO.obtenerTodas() + hotelDAO.obtenerTodas()
+        val vuelos = vueloDAO.obtenerTodas()
+        val hoteles = hotelDAO.obtenerTodas()
+
+        return vuelos + hoteles
     }
 }
