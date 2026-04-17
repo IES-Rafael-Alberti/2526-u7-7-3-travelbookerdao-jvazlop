@@ -1,4 +1,4 @@
-package es.iesra.DAO
+package es.iesra.dao
 
 interface IDAO<T> {
     fun guardar(obj: T)

@@ -1,11 +1,11 @@
-package es.iesra.DAO
+package es.iesra.datos.DAO
 
 import es.iesra.dominio.ReservaVuelo
 import java.io.File
 
 class ReservaVueloDAO(
-    private val filePath: String = "data/reservas_vuelo.txt"
-) : IDAO<ReservaVuelo> {
+    private val filePath: String = "reservas_vuelo.csv"
+) {
 
     private val file = File(filePath)
 
@@ -13,18 +13,22 @@ class ReservaVueloDAO(
         if (!file.exists()) {
             file.parentFile.mkdirs()
             file.createNewFile()
+            file.appendText("id,descripcion,origen,destino,hora\n")
         }
     }
 
-    override fun guardar(obj: ReservaVuelo) {
-        file.appendText("${obj.id}|${obj.descripcion}|${obj.origen}|${obj.destino}|${obj.horaVuelo}\n")
+    fun guardar(reserva: ReservaVuelo) {
+        val linea = "${reserva.id},${reserva.descripcion},${reserva.origen},${reserva.destino},${reserva.horaVuelo}\n"
+        file.appendText(linea)
     }
 
-    override fun obtenerTodas(): List<ReservaVuelo> {
+    fun obtenerTodas(): List<ReservaVuelo> {
         return file.readLines()
+            .drop(1)
             .filter { it.isNotBlank() }
             .map { linea ->
-                val partes = linea.split("|")
+                val partes = linea.split(",")
+
                 ReservaVuelo.creaInstancia(
                     partes[1],
                     partes[2],
@@ -34,26 +38,28 @@ class ReservaVueloDAO(
             }
     }
 
-    override fun eliminar(id: Int): Boolean {
+    fun eliminar(id: Int): Boolean {
         val lista = obtenerTodas().toMutableList()
         val eliminado = lista.removeIf { it.id == id }
 
         if (eliminado) {
-            file.writeText("")
+            file.writeText("id,descripcion,origen,destino,hora\n")
             lista.forEach { guardar(it) }
         }
 
         return eliminado
     }
 
-    override fun actualizar(obj: ReservaVuelo): Boolean {
+    fun actualizar(reserva: ReservaVuelo): Boolean {
         val lista = obtenerTodas().toMutableList()
-        val index = lista.indexOfFirst { it.id == obj.id }
+        val index = lista.indexOfFirst { it.id == reserva.id }
 
         if (index != -1) {
-            lista[index] = obj
-            file.writeText("")
+            lista[index] = reserva
+
+            file.writeText("id,descripcion,origen,destino,hora\n")
             lista.forEach { guardar(it) }
+
             return true
         }
 

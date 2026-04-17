@@ -3,7 +3,7 @@ import es.iesra.presentacion.ConsolaUI
 import es.iesra.presentacion.IUserInterface
 import es.iesra.servicio.IReservaService
 import es.iesra.servicio.ReservaService
-import es.iesra.DAO.ReservaVueloDAO
+import es.iesra.dao.ReservaVueloDAO
 /**
  * Función principal que inicia la aplicación.
  * Se realiza la inyección de dependencias de manera manual.
