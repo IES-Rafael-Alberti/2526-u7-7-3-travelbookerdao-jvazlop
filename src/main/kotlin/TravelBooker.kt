@@ -1,24 +1,24 @@
+package es.iesra
+
 import es.iesra.datos.ReservaRepository
+import es.iesra.datos.DAO.ReservaVueloDAO
+import es.iesra.datos.DAO.ReservaHotelDAO
 import es.iesra.presentacion.ConsolaUI
 import es.iesra.presentacion.IUserInterface
 import es.iesra.servicio.IReservaService
 import es.iesra.servicio.ReservaService
 
-/**
- * Función principal que inicia la aplicación.
- * Se realiza la inyección de dependencias de manera manual.
- */
 fun main() {
-    // Crear la instancia del repositorio (capa de datos).
-    val repositorio = ReservaRepository()
+    val vueloDAO = ReservaVueloDAO()
+    val hotelDAO = ReservaHotelDAO()
 
-    // Inyectar la dependencia en el servicio a través de la interfaz.
+    val repositorio = ReservaRepository(vueloDAO, hotelDAO)
+
     val reservaService: IReservaService = ReservaService(repositorio)
 
-    // Inyectar el servicio en la capa de presentación a través de su interfaz.
     val ui: IUserInterface = ConsolaUI(reservaService)
 
-    // Iniciar la aplicación.
+    // Iniciar aplicación
     ui.iniciar()
 }
 /*
